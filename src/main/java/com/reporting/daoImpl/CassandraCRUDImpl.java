@@ -18,8 +18,10 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import com.reporting.bean.AccountPerformanceBean;
 import com.reporting.bean.CassandraCredentials;
-import com.reporting.bean.MonthlyAdAccountPerformanceBean;
-import com.reporting.bean.WeeklyAdAccountPerformanceBean;
+import com.reporting.bean.MonthlyAccountPerformanceBean;
+
+import com.reporting.bean.WeeklyAccountPerformanceBean;
+
 import com.reporting.dao.CassandraDao;
 
 public class CassandraCRUDImpl implements CassandraDao {
@@ -69,10 +71,18 @@ public class CassandraCRUDImpl implements CassandraDao {
 
 	}
 
-	List<WeeklyAdAccountPerformanceBean> weeklyAdAccount = new ArrayList<WeeklyAdAccountPerformanceBean>();
-	List<MonthlyAdAccountPerformanceBean> monthlyAdAccount = new ArrayList<MonthlyAdAccountPerformanceBean>();
-
-	List<AccountPerformanceBean> dailyAccountValues = new ArrayList<AccountPerformanceBean>();
+	List<WeeklyAccountPerformanceBean> weeklyAccount = new ArrayList<WeeklyAccountPerformanceBean>();
+	List<MonthlyAccountPerformanceBean> monthlyAccount = new ArrayList<MonthlyAccountPerformanceBean>();
+	List<AccountPerformanceBean> dailyAccount = new ArrayList<AccountPerformanceBean>();
+	List<WeeklyCampaignPerformanceBean> weeklyCampaignAccount = new ArrayList<WeeklyCampaignPerformanceBean>();
+	List<MonthlyCampaignPerformanceBean> monthlyCampaignAccount = new ArrayList<MonthlyCampaignPerformanceBean>();
+	List<DailyCampaignPerformanceBean> dailyCampaignAccount = new ArrayList<DailyCampaignPerformanceBean>();
+	List<WeeklyAdsPerformanceBean> weeklyAdsAccount = new ArrayList<WeeklyAdsPerformanceBean>();
+	List<MonthlyAdsPerformanceBean> monthlyAdsAccount = new ArrayList<MonthlyAdsPerformanceBean>();
+	List<dailyAdsPerformanceBean> dailyAdsAccount = new ArrayList<DailyAdsPerformanceBean>();
+	List<WeeklyAdsetsPerformanceBean> weeklyAdsetsAccount = new ArrayList<WeeklyAdsetsPerformanceBean>();
+	List<MonthlyAdsetsPerformanceBean> monthlyAdsetsAccount = new ArrayList<MonthlyAdsetsPerformanceBean>();
+	List<DailyAdsetsPerformanceBean> dailyAdsetsAccount = new ArrayList<AccountAdsetsPerformanceBean>();
 
 	public void writeAccountDataToCassandraDaily(String accessToken, String account_id, String client_stamp)
 			throws IOException {
@@ -106,7 +116,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 					result1.getString("inline_link_clicks"), result1.getString("frequency"),
 					result1.getString("impressions"), result1.getString("clicks"), result1.getString("cpc"),
 					result1.getString("ctr"), client_stamp);
-			dailyAccountValues.add(addAdAccountData);
+			dailyAccount.add(addAdAccountData);
 
 		}
 
@@ -138,14 +148,14 @@ public class CassandraCRUDImpl implements CassandraDao {
 			JSONArray Weeklyresult = WeeklyJObject.getJSONArray("data");
 			weekly_result = Weeklyresult.getJSONObject(0);
 
-			WeeklyAdAccountPerformanceBean addWeekly = new WeeklyAdAccountPerformanceBean(
+			WeeklyAccountPerformanceBean addWeekly = new WeeklyAccountPerformanceBean(
 					weekly_result.getString("date_start"), weekly_result.getString("date_stop"),
 					weekly_result.getString("account_name"), weekly_result.getString("account_id"),
 					weekly_result.getString("social_reach"), weekly_result.getString("spend"),
 					weekly_result.getString("inline_link_clicks"), weekly_result.getString("frequency"),
 					weekly_result.getString("impressions"), weekly_result.getString("clicks"),
 					weekly_result.getString("cpc"), weekly_result.getString("ctr"), client_stamp);
-			weeklyAdAccount.add(addWeekly);
+			weeklyAccount.add(addWeekly);
 		}
 
 	}
@@ -176,35 +186,89 @@ public class CassandraCRUDImpl implements CassandraDao {
 			JSONArray Monthlyresult = MonthlyJObject.getJSONArray("data");
 			monthly_result = Monthlyresult.getJSONObject(0);
 
-			MonthlyAdAccountPerformanceBean addMonthly = new MonthlyAdAccountPerformanceBean(
+			MonthlyAccountPerformanceBean addMonthly = new MonthlyAccountPerformanceBean(
 					monthly_result.getString("date_start"), monthly_result.getString("date_stop"),
 					monthly_result.getString("account_name"), monthly_result.getString("account_id"),
 					monthly_result.getString("social_reach"), monthly_result.getString("spend"),
 					monthly_result.getString("inline_link_clicks"), monthly_result.getString("frequency"),
 					monthly_result.getString("impressions"), monthly_result.getString("clicks"),
 					monthly_result.getString("cpc"), monthly_result.getString("ctr"), client_stamp);
-			monthlyAdAccount.add(addMonthly);
+			monthlyAccount.add(addMonthly);
 		}
 	}
 
+	public void writeCampaignDataToCassandraDaily(String account_id, String accessToken, String client_stamp)
+			throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void writeCampaignDataToCassandraWeekly(String accessToken, String account_id, String client_stamp)
+			throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void writeCampaignDataToCassandraMonthly(String accessToken, String account_id, String client_stamp)
+			throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void writeAdsDataToCassandraDaily(String account_id, String accessToken, String client_stamp)
+			throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void writeAdsDataToCassandraWeekly(String accessToken, String account_id, String client_stamp)
+			throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void writeAdsDataToCassandraMonthly(String accessToken, String account_id, String client_stamp)
+			throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void writeAdsetsDataToCassandraDaily(String account_id, String accessToken, String client_stamp)
+			throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void writeAdsetsDataToCassandraWeekly(String accessToken, String account_id, String client_stamp)
+			throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void writeAdsetsDataToCassandraMonthly(String accessToken, String account_id, String client_stamp)
+			throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
 	public void dataAddToCassandra() {
-		for (int i = 0; i < dailyAccountValues.size(); i++) {
+		for (int i = 0; i < dailyAccount.size(); i++) {
 
-			AccountPerformanceBean accountbean = dailyAccountValues.get(i);
+			AccountPerformanceBean accountbean = dailyAccount.get(i);
 			cassandraOperations.insert(accountbean);
 
 		}
 
-		for (int i = 0; i < weeklyAdAccount.size(); i++) {
+		for (int i = 0; i < weeklyAccount.size(); i++) {
 
-			WeeklyAdAccountPerformanceBean accountbean = weeklyAdAccount.get(i);
+			WeeklyAccountPerformanceBean accountbean = weeklyAccount.get(i);
 			cassandraOperations.insert(accountbean);
 
 		}
 
-		for (int i = 0; i < monthlyAdAccount.size(); i++) {
+		for (int i = 0; i < monthlyAccount.size(); i++) {
 
-			MonthlyAdAccountPerformanceBean accountbean = monthlyAdAccount.get(i);
+			MonthlyAccountPerformanceBean accountbean = monthlyAccount.get(i);
 			cassandraOperations.insert(accountbean);
 
 		}

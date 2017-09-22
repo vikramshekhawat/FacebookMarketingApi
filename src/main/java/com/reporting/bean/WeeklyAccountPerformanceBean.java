@@ -8,7 +8,7 @@ import org.springframework.data.cassandra.mapping.Table;
 
 	
 	@Table(value = "facebook_weekly_ad_account_performance")
-	public class WeeklyAdAccountPerformanceBean {
+	public class WeeklyAccountPerformanceBean {
 		@PrimaryKeyColumn(name = "client_stamp", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
 		@Column
 		private String client_stamp;
@@ -36,11 +36,11 @@ import org.springframework.data.cassandra.mapping.Table;
 		private String CPC;
 		@Column
 		private String CTR;
-		public WeeklyAdAccountPerformanceBean() {
+		public WeeklyAccountPerformanceBean() {
 			super();
 			// TODO Auto-generated constructor stub
 		}
-		public WeeklyAdAccountPerformanceBean(String reporting_starts, String reporting_ends, String account_name,
+		public WeeklyAccountPerformanceBean(String reporting_starts, String reporting_ends, String account_name,
 				String account_id, String reach, String amount_spent, String link_clicks, String frequency,
 				String impressions, String clicks, String CPC, String CTR, String client_stamp) {
 			super();
