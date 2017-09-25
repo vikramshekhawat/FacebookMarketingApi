@@ -1,23 +1,12 @@
 package com.reporting.FacebookAds;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.reporting.Enviornment.EnvironmentClass;
-import com.reporting.bean.AccountPerformanceBean;
-import com.reporting.bean.MonthlyAdAccountPerformanceBean;
-import com.reporting.bean.WeeklyAdAccountPerformanceBean;
-import com.reporting.dao.CassandraDao;
 import com.reporting.daoImpl.AllClientInforNeededDaoImpl;
 import com.reporting.daoImpl.CassandraCRUDImpl;
 
@@ -47,6 +36,15 @@ public class App {
 					daos.writeAccountDataToCassandraDaily(accessToken, account_id, client_stamp);
 					daos.writeAccountDataToCassandraWeekly(accessToken, account_id, client_stamp);
 					daos.writeAccountDataToCassandraMonthly(accessToken, account_id, client_stamp);
+					daos.writeCampaignDataToCassandraDaily(accessToken, account_id, client_stamp);
+					daos.writeCampaignDataToCassandraWeekly(accessToken, account_id, client_stamp);
+					daos.writeCampaignDataToCassandraMonthly(accessToken, account_id, client_stamp);
+					daos.writeAdsDataToCassandraDaily(account_id, accessToken, client_stamp);
+					daos.writeAdsDataToCassandraWeekly(accessToken, account_id, client_stamp);
+					daos.writeAdsDataToCassandraMonthly(accessToken, account_id, client_stamp);
+					daos.writeAdsetsDataToCassandraDaily(account_id, accessToken, client_stamp);
+					daos.writeAdsetsDataToCassandraMonthly(accessToken, account_id, client_stamp);
+					daos.writeAdsetsDataToCassandraWeekly(accessToken, account_id, client_stamp);
 
 				}
 			}

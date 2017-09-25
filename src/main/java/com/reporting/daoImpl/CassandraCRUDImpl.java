@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +17,17 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import com.reporting.bean.AccountPerformanceBean;
 import com.reporting.bean.CassandraCredentials;
+import com.reporting.bean.DailyAdsPerformanceBean;
+import com.reporting.bean.DailyAdsetsPerformanceBean;
+import com.reporting.bean.DailyCampaignPerformanceBean;
 import com.reporting.bean.MonthlyAccountPerformanceBean;
-
+import com.reporting.bean.MonthlyAdsPerformanceBean;
+import com.reporting.bean.MonthlyAdsetsPerformanceBean;
+import com.reporting.bean.MonthlyCampaignPerformanceBean;
 import com.reporting.bean.WeeklyAccountPerformanceBean;
-
+import com.reporting.bean.WeeklyAdsPerformanceBean;
+import com.reporting.bean.WeeklyAdsetsPerformanceBean;
+import com.reporting.bean.WeeklyCampaignPerformanceBean;
 import com.reporting.dao.CassandraDao;
 
 public class CassandraCRUDImpl implements CassandraDao {
@@ -79,10 +85,10 @@ public class CassandraCRUDImpl implements CassandraDao {
 	List<DailyCampaignPerformanceBean> dailyCampaignAccount = new ArrayList<DailyCampaignPerformanceBean>();
 	List<WeeklyAdsPerformanceBean> weeklyAdsAccount = new ArrayList<WeeklyAdsPerformanceBean>();
 	List<MonthlyAdsPerformanceBean> monthlyAdsAccount = new ArrayList<MonthlyAdsPerformanceBean>();
-	List<dailyAdsPerformanceBean> dailyAdsAccount = new ArrayList<DailyAdsPerformanceBean>();
+	List<DailyAdsPerformanceBean> dailyAdsAccount = new ArrayList<DailyAdsPerformanceBean>();
 	List<WeeklyAdsetsPerformanceBean> weeklyAdsetsAccount = new ArrayList<WeeklyAdsetsPerformanceBean>();
 	List<MonthlyAdsetsPerformanceBean> monthlyAdsetsAccount = new ArrayList<MonthlyAdsetsPerformanceBean>();
-	List<DailyAdsetsPerformanceBean> dailyAdsetsAccount = new ArrayList<AccountAdsetsPerformanceBean>();
+	List<DailyAdsetsPerformanceBean> dailyAdsetsAccount = new ArrayList<DailyAdsetsPerformanceBean>();
 
 	public void writeAccountDataToCassandraDaily(String accessToken, String account_id, String client_stamp)
 			throws IOException {
@@ -197,58 +203,328 @@ public class CassandraCRUDImpl implements CassandraDao {
 		}
 	}
 
-	public void writeCampaignDataToCassandraDaily(String account_id, String accessToken, String client_stamp)
+	public void writeCampaignDataToCassandraDaily(String accessToken, String account_id, String client_stamp)
 			throws IOException {
-		// TODO Auto-generated method stub
+		URL url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
+				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,campaign_id,campaign_name&effective_status=[ACTIVE]&level=campaign&date_preset=yesterday"
+				+ "&access_token=" + accessToken);
+
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setRequestMethod("GET");
+		conn.setRequestProperty("Accept", "application/json");
+
+		if (conn.getResponseCode() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+		}
+		BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+		String output = "", full = "";
+		JSONObject result1;
+		while ((output = br.readLine()) != null) {
+			System.out.println(output);
+			full += output;
+			JSONObject JObject = new JSONObject(output);
+			JSONArray result = JObject.getJSONArray("data");
+			result1 = result.getJSONObject(0);
+
+			DailyCampaignPerformanceBean addAdAccountData = new DailyCampaignPerformanceBean(client_stamp,
+					result1.getString("date_start"), result1.getString("date_stop"), result1.getString("account_name"),
+					result1.getString("account_id"), result1.getString("social_reach"), result1.getString("spend"),
+					result1.getString("inline_link_clicks"), result1.getString("frequency"),
+					result1.getString("impressions"), result1.getString("clicks"), result1.getString("cpc"),
+					result1.getString("ctr"),result1.getString("campaign_id"),result1.getString("campaign_name") );
+			dailyCampaignAccount.add(addAdAccountData);
+
+		}
 
 	}
 
 	public void writeCampaignDataToCassandraWeekly(String accessToken, String account_id, String client_stamp)
 			throws IOException {
-		// TODO Auto-generated method stub
+		URL Weekly_url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
+				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,campaign_id,campaign_name&effective_status=[ACTIVE]&level=campaign&date_preset=last_week_mon_sun"
+				+ "&access_token=" + accessToken);
 
+		HttpURLConnection weekly_conn = (HttpURLConnection) Weekly_url.openConnection();
+		weekly_conn.setRequestMethod("GET");
+		weekly_conn.setRequestProperty("Accept", "application/json");
+
+		if (weekly_conn.getResponseCode() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : " + weekly_conn.getResponseCode());
+		}
+		BufferedReader Weekly_br = new BufferedReader(new InputStreamReader((weekly_conn.getInputStream())));
+
+		String weeklyOutput = "", data = "";
+		JSONObject weekly_result;
+		while ((weeklyOutput = Weekly_br.readLine()) != null) {
+			System.out.println(weeklyOutput);
+			data += weeklyOutput;
+			JSONObject WeeklyJObject = new JSONObject(weeklyOutput);
+			JSONArray Weeklyresult = WeeklyJObject.getJSONArray("data");
+			weekly_result = Weeklyresult.getJSONObject(0);
+
+			WeeklyCampaignPerformanceBean addWeekly = new WeeklyCampaignPerformanceBean(client_stamp,
+					weekly_result.getString("date_start"), weekly_result.getString("date_stop"), weekly_result.getString("account_name"),
+					weekly_result.getString("account_id"), weekly_result.getString("social_reach"), weekly_result.getString("spend"),
+					weekly_result.getString("inline_link_clicks"), weekly_result.getString("frequency"),
+					weekly_result.getString("impressions"), weekly_result.getString("clicks"), weekly_result.getString("cpc"),
+					weekly_result.getString("ctr"),weekly_result.getString("campaign_id"),weekly_result.getString("campaign_name") );
+			weeklyCampaignAccount.add(addWeekly);
+		}
 	}
 
 	public void writeCampaignDataToCassandraMonthly(String accessToken, String account_id, String client_stamp)
 			throws IOException {
-		// TODO Auto-generated method stub
+		URL Monthly_url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
+				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,campaign_id,campaign_name&effective_status=[ACTIVE]&level=campaign&date_preset=last_month"
+				+ "&access_token=" + accessToken);
 
+		HttpURLConnection monthly_conn = (HttpURLConnection) Monthly_url.openConnection();
+		monthly_conn.setRequestMethod("GET");
+		monthly_conn.setRequestProperty("Accept", "application/json");
+
+		if (monthly_conn.getResponseCode() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : " + monthly_conn.getResponseCode());
+		}
+		BufferedReader monthly_br = new BufferedReader(new InputStreamReader((monthly_conn.getInputStream())));
+
+		String monthlyOutput = "", monthlydata = "";
+		JSONObject monthly_result;
+		while ((monthlyOutput = monthly_br.readLine()) != null) {
+			System.out.println(monthlyOutput);
+			monthlydata += monthlyOutput;
+			JSONObject MonthlyJObject = new JSONObject(monthlyOutput);
+			JSONArray Monthlyresult = MonthlyJObject.getJSONArray("data");
+			monthly_result = Monthlyresult.getJSONObject(0);
+
+			MonthlyCampaignPerformanceBean addMonthly = new MonthlyCampaignPerformanceBean(client_stamp,
+					monthly_result.getString("date_start"), monthly_result.getString("date_stop"), monthly_result.getString("account_name"),
+					monthly_result.getString("account_id"), monthly_result.getString("social_reach"), monthly_result.getString("spend"),
+					monthly_result.getString("inline_link_clicks"), monthly_result.getString("frequency"),
+					monthly_result.getString("impressions"), monthly_result.getString("clicks"), monthly_result.getString("cpc"),
+					monthly_result.getString("ctr"),monthly_result.getString("campaign_id"),monthly_result.getString("campaign_name") );
+			monthlyCampaignAccount.add(addMonthly);
+		}
 	}
 
 	public void writeAdsDataToCassandraDaily(String account_id, String accessToken, String client_stamp)
 			throws IOException {
-		// TODO Auto-generated method stub
+		URL url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
+				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,ad_id,ad_name&effective_status=[ACTIVE]&level=ad&date_preset=yesterday"
+				+ "&access_token=" + accessToken);
+
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setRequestMethod("GET");
+		conn.setRequestProperty("Accept", "application/json");
+
+		if (conn.getResponseCode() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+		}
+		BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+		String output = "", full = "";
+		JSONObject result1;
+		while ((output = br.readLine()) != null) {
+			System.out.println(output);
+			full += output;
+			JSONObject JObject = new JSONObject(output);
+			JSONArray result = JObject.getJSONArray("data");
+			result1 = result.getJSONObject(0);
+
+			DailyAdsPerformanceBean addAdAccountData = new DailyAdsPerformanceBean(client_stamp,
+					result1.getString("date_start"), result1.getString("date_stop"), result1.getString("account_name"),
+					result1.getString("account_id"), result1.getString("social_reach"), result1.getString("spend"),
+					result1.getString("inline_link_clicks"), result1.getString("frequency"),
+					result1.getString("impressions"), result1.getString("clicks"), result1.getString("cpc"),
+					result1.getString("ctr"),result1.getString("ad_id"),result1.getString("ad_name") );
+			dailyAdsAccount.add(addAdAccountData);
+
+		}
 
 	}
 
 	public void writeAdsDataToCassandraWeekly(String accessToken, String account_id, String client_stamp)
 			throws IOException {
-		// TODO Auto-generated method stub
+		URL Weekly_url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
+				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,ad_id,ad_name&effective_status=[ACTIVE]&level=ad&date_preset=last_week_mon_sun"
+				+ "&access_token=" + accessToken);
+
+		HttpURLConnection weekly_conn = (HttpURLConnection) Weekly_url.openConnection();
+		weekly_conn.setRequestMethod("GET");
+		weekly_conn.setRequestProperty("Accept", "application/json");
+
+		if (weekly_conn.getResponseCode() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : " + weekly_conn.getResponseCode());
+		}
+		BufferedReader Weekly_br = new BufferedReader(new InputStreamReader((weekly_conn.getInputStream())));
+
+		String weeklyOutput = "", data = "";
+		JSONObject weekly_result;
+		while ((weeklyOutput = Weekly_br.readLine()) != null) {
+			System.out.println(weeklyOutput);
+			data += weeklyOutput;
+			JSONObject WeeklyJObject = new JSONObject(weeklyOutput);
+			JSONArray Weeklyresult = WeeklyJObject.getJSONArray("data");
+			weekly_result = Weeklyresult.getJSONObject(0);
+
+			WeeklyAdsPerformanceBean addWeekly = new WeeklyAdsPerformanceBean(client_stamp,
+					weekly_result.getString("date_start"), weekly_result.getString("date_stop"), weekly_result.getString("account_name"),
+					weekly_result.getString("account_id"), weekly_result.getString("social_reach"), weekly_result.getString("spend"),
+					weekly_result.getString("inline_link_clicks"), weekly_result.getString("frequency"),
+					weekly_result.getString("impressions"), weekly_result.getString("clicks"), weekly_result.getString("cpc"),
+					weekly_result.getString("ctr"),weekly_result.getString("ad_id"),weekly_result.getString("ad_name") );
+			weeklyAdsAccount.add(addWeekly);
+		}
 
 	}
 
 	public void writeAdsDataToCassandraMonthly(String accessToken, String account_id, String client_stamp)
 			throws IOException {
-		// TODO Auto-generated method stub
+		URL Monthly_url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
+				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,ad_id,ad_name&effective_status=[ACTIVE]&level=ad&date_preset=last_month"
+				+ "&access_token=" + accessToken);
+
+		HttpURLConnection monthly_conn = (HttpURLConnection) Monthly_url.openConnection();
+		monthly_conn.setRequestMethod("GET");
+		monthly_conn.setRequestProperty("Accept", "application/json");
+
+		if (monthly_conn.getResponseCode() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : " + monthly_conn.getResponseCode());
+		}
+		BufferedReader monthly_br = new BufferedReader(new InputStreamReader((monthly_conn.getInputStream())));
+
+		String monthlyOutput = "", monthlydata = "";
+		JSONObject monthly_result;
+		while ((monthlyOutput = monthly_br.readLine()) != null) {
+			System.out.println(monthlyOutput);
+			monthlydata += monthlyOutput;
+			JSONObject MonthlyJObject = new JSONObject(monthlyOutput);
+			JSONArray Monthlyresult = MonthlyJObject.getJSONArray("data");
+			monthly_result = Monthlyresult.getJSONObject(0);
+
+			MonthlyAdsPerformanceBean addMonthly = new MonthlyAdsPerformanceBean(client_stamp,
+					monthly_result.getString("date_start"), monthly_result.getString("date_stop"), monthly_result.getString("account_name"),
+					monthly_result.getString("account_id"), monthly_result.getString("social_reach"), monthly_result.getString("spend"),
+					monthly_result.getString("inline_link_clicks"), monthly_result.getString("frequency"),
+					monthly_result.getString("impressions"), monthly_result.getString("clicks"), monthly_result.getString("cpc"),
+					monthly_result.getString("ctr"),monthly_result.getString("ad_id"),monthly_result.getString("ad_name") );
+			monthlyAdsAccount.add(addMonthly);
+		}
 
 	}
 
 	public void writeAdsetsDataToCassandraDaily(String account_id, String accessToken, String client_stamp)
 			throws IOException {
-		// TODO Auto-generated method stub
+		URL url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
+				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,adset_id,adset_name&effective_status=[ACTIVE]&level=adset&date_preset=yesterday"
+				+ "&access_token=" + accessToken);
+
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setRequestMethod("GET");
+		conn.setRequestProperty("Accept", "application/json");
+
+		if (conn.getResponseCode() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+		}
+		BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+		String output = "", full = "";
+		JSONObject result1;
+		while ((output = br.readLine()) != null) {
+			System.out.println(output);
+			full += output;
+			JSONObject JObject = new JSONObject(output);
+			JSONArray result = JObject.getJSONArray("data");
+			result1 = result.getJSONObject(0);
+
+			DailyAdsetsPerformanceBean addAdAccountData = new DailyAdsetsPerformanceBean(client_stamp,
+					result1.getString("date_start"), result1.getString("date_stop"), result1.getString("account_name"),
+					result1.getString("account_id"), result1.getString("social_reach"), result1.getString("spend"),
+					result1.getString("inline_link_clicks"), result1.getString("frequency"),
+					result1.getString("impressions"), result1.getString("clicks"), result1.getString("cpc"),
+					result1.getString("ctr"),result1.getString("adset_id"),result1.getString("adset_name") );
+			dailyAdsetsAccount.add(addAdAccountData);
+
+		}
 
 	}
 
 	public void writeAdsetsDataToCassandraWeekly(String accessToken, String account_id, String client_stamp)
 			throws IOException {
-		// TODO Auto-generated method stub
+		URL Weekly_url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
+				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,adset_id,adset_name&effective_status=[ACTIVE]&level=adset&date_preset=last_week_mon_sun"
+				+ "&access_token=" + accessToken);
+
+		HttpURLConnection weekly_conn = (HttpURLConnection) Weekly_url.openConnection();
+		weekly_conn.setRequestMethod("GET");
+		weekly_conn.setRequestProperty("Accept", "application/json");
+
+		if (weekly_conn.getResponseCode() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : " + weekly_conn.getResponseCode());
+		}
+		BufferedReader Weekly_br = new BufferedReader(new InputStreamReader((weekly_conn.getInputStream())));
+
+		String weeklyOutput = "", data = "";
+		JSONObject weekly_result;
+		while ((weeklyOutput = Weekly_br.readLine()) != null) {
+			System.out.println(weeklyOutput);
+			data += weeklyOutput;
+			JSONObject WeeklyJObject = new JSONObject(weeklyOutput);
+			JSONArray Weeklyresult = WeeklyJObject.getJSONArray("data");
+			weekly_result = Weeklyresult.getJSONObject(0);
+
+			WeeklyAdsetsPerformanceBean addWeekly = new WeeklyAdsetsPerformanceBean(client_stamp,
+					weekly_result.getString("date_start"), weekly_result.getString("date_stop"), weekly_result.getString("account_name"),
+					weekly_result.getString("account_id"), weekly_result.getString("social_reach"), weekly_result.getString("spend"),
+					weekly_result.getString("inline_link_clicks"), weekly_result.getString("frequency"),
+					weekly_result.getString("impressions"), weekly_result.getString("clicks"), weekly_result.getString("cpc"),
+					weekly_result.getString("ctr"),weekly_result.getString("adset_id"),weekly_result.getString("adset_name") );
+			weeklyAdsetsAccount.add(addWeekly);
+		}
 
 	}
 
 	public void writeAdsetsDataToCassandraMonthly(String accessToken, String account_id, String client_stamp)
 			throws IOException {
-		// TODO Auto-generated method stub
+		URL Monthly_url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
+				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,adset_id,adset_name&effective_status=[ACTIVE]&level=adset&date_preset=last_month"
+				+ "&access_token=" + accessToken);
 
+		HttpURLConnection monthly_conn = (HttpURLConnection) Monthly_url.openConnection();
+		monthly_conn.setRequestMethod("GET");
+		monthly_conn.setRequestProperty("Accept", "application/json");
+
+		if (monthly_conn.getResponseCode() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : " + monthly_conn.getResponseCode());
+		}
+		BufferedReader monthly_br = new BufferedReader(new InputStreamReader((monthly_conn.getInputStream())));
+
+		String monthlyOutput = "", monthlydata = "";
+		JSONObject monthly_result;
+		while ((monthlyOutput = monthly_br.readLine()) != null) {
+			System.out.println(monthlyOutput);
+			monthlydata += monthlyOutput;
+			JSONObject MonthlyJObject = new JSONObject(monthlyOutput);
+			JSONArray Monthlyresult = MonthlyJObject.getJSONArray("data");
+			monthly_result = Monthlyresult.getJSONObject(0);
+
+			MonthlyAdsetsPerformanceBean addMonthly = new MonthlyAdsetsPerformanceBean(client_stamp,
+					monthly_result.getString("date_start"), monthly_result.getString("date_stop"), monthly_result.getString("account_name"),
+					monthly_result.getString("account_id"), monthly_result.getString("social_reach"), monthly_result.getString("spend"),
+					monthly_result.getString("inline_link_clicks"), monthly_result.getString("frequency"),
+					monthly_result.getString("impressions"), monthly_result.getString("clicks"), monthly_result.getString("cpc"),
+					monthly_result.getString("ctr"),monthly_result.getString("adset_id"),monthly_result.getString("adset_name") );
+			monthlyAdsetsAccount.add(addMonthly);
+		}
 	}
 
 	public void dataAddToCassandra() {
@@ -272,6 +548,64 @@ public class CassandraCRUDImpl implements CassandraDao {
 			cassandraOperations.insert(accountbean);
 
 		}
+		for (int i = 0; i < dailyCampaignAccount.size(); i++) {
+
+			DailyCampaignPerformanceBean accountbean = dailyCampaignAccount.get(i);
+			cassandraOperations.insert(accountbean);
+
+		}
+		for (int i = 0; i < weeklyCampaignAccount.size(); i++) {
+
+			WeeklyCampaignPerformanceBean accountbean = weeklyCampaignAccount.get(i);
+			cassandraOperations.insert(accountbean);
+
+		}
+		for (int i = 0; i < monthlyCampaignAccount.size(); i++) {
+
+			MonthlyCampaignPerformanceBean accountbean = monthlyCampaignAccount.get(i);
+			cassandraOperations.insert(accountbean);
+
+		}
+		
+		for (int i = 0; i < dailyAdsAccount.size(); i++) {
+
+			DailyAdsPerformanceBean accountbean = dailyAdsAccount.get(i);
+			cassandraOperations.insert(accountbean);
+
+		}
+		for (int i = 0; i < weeklyAdsAccount.size(); i++) {
+
+			WeeklyAdsPerformanceBean accountbean = weeklyAdsAccount.get(i);
+			cassandraOperations.insert(accountbean);
+
+		}
+		for (int i = 0; i < monthlyAdsAccount.size(); i++) {
+
+			MonthlyAdsPerformanceBean accountbean = monthlyAdsAccount.get(i);
+			cassandraOperations.insert(accountbean);
+
+		}
+		for (int i = 0; i < dailyAdsetsAccount.size(); i++) {
+
+			DailyAdsetsPerformanceBean accountbean = dailyAdsetsAccount.get(i);
+			cassandraOperations.insert(accountbean);
+
+		}
+		for (int i = 0; i < weeklyAdsetsAccount.size(); i++) {
+
+			WeeklyAdsetsPerformanceBean accountbean = weeklyAdsetsAccount.get(i);
+			cassandraOperations.insert(accountbean);
+
+		}
+		for (int i = 0; i < monthlyAdsetsAccount.size(); i++) {
+
+			MonthlyAdsetsPerformanceBean accountbean = monthlyAdsetsAccount.get(i);
+			cassandraOperations.insert(accountbean);
+
+		}
+		
+		
+		
 
 	}
 
