@@ -10,8 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.JSONObject;import org.springframework.cassandra.core.Ordering;
+import org.springframework.cassandra.core.PrimaryKeyType;
 import org.springframework.data.cassandra.core.CassandraTemplate;
+import org.springframework.data.cassandra.mapping.PrimaryKeyColumn;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
@@ -207,7 +209,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 			throws IOException {
 		URL url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
 				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
-				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,campaign_id,campaign_name&effective_status=[ACTIVE]&level=campaign&date_preset=yesterday"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,campaign_id,campaign_name,unique_ctr&effective_status=[ACTIVE]&level=campaign&date_preset=yesterday"
 				+ "&access_token=" + accessToken);
 
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -236,7 +238,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 						result1.getString("social_reach"), result1.getString("spend"),
 						result1.getString("inline_link_clicks"), result1.getString("frequency"),
 						result1.getString("impressions"), result1.getString("clicks"), result1.getString("cpc"),
-						result1.getString("ctr"), result1.getString("campaign_id"), result1.getString("campaign_name"));
+						result1.getString("ctr"), result1.getString("campaign_id"), result1.getString("campaign_name"),result1.getString("unique_ctr"));
 				dailyCampaignAccount.add(addAdAccountData);
 
 			}
@@ -248,7 +250,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 			throws IOException {
 		URL Weekly_url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
 				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
-				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,campaign_id,campaign_name&effective_status=[ACTIVE]&level=campaign&date_preset=last_week_mon_sun"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,campaign_id,campaign_name,unique_ctr&effective_status=[ACTIVE]&level=campaign&date_preset=last_week_mon_sun"
 				+ "&access_token=" + accessToken);
 
 		HttpURLConnection weekly_conn = (HttpURLConnection) Weekly_url.openConnection();
@@ -278,7 +280,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 						weekly_result.getString("inline_link_clicks"), weekly_result.getString("frequency"),
 						weekly_result.getString("impressions"), weekly_result.getString("clicks"),
 						weekly_result.getString("cpc"), weekly_result.getString("ctr"),
-						weekly_result.getString("campaign_id"), weekly_result.getString("campaign_name"));
+						weekly_result.getString("campaign_id"), weekly_result.getString("campaign_name"),weekly_result.getString("unique_ctr"));
 				weeklyCampaignAccount.add(addWeekly);
 			}
 		}
@@ -289,7 +291,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 			throws IOException {
 		URL Monthly_url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
 				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
-				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,campaign_id,campaign_name&effective_status=[ACTIVE]&level=campaign&date_preset=last_month"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,campaign_id,campaign_name,unique_ctr&effective_status=[ACTIVE]&level=campaign&date_preset=last_month"
 				+ "&access_token=" + accessToken);
 
 		HttpURLConnection monthly_conn = (HttpURLConnection) Monthly_url.openConnection();
@@ -318,7 +320,8 @@ public class CassandraCRUDImpl implements CassandraDao {
 						monthly_result.getString("inline_link_clicks"), monthly_result.getString("frequency"),
 						monthly_result.getString("impressions"), monthly_result.getString("clicks"),
 						monthly_result.getString("cpc"), monthly_result.getString("ctr"),
-						monthly_result.getString("campaign_id"), monthly_result.getString("campaign_name"));
+						monthly_result.getString("campaign_id"), monthly_result.getString("campaign_name"),
+						monthly_result.getString("unique_ctr"));
 				monthlyCampaignAccount.add(addMonthly);
 			}
 		}
@@ -328,7 +331,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 			throws IOException {
 		URL url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
 				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
-				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,ad_id,ad_name&effective_status=[ACTIVE]&level=ad&date_preset=yesterday"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,ad_id,ad_name,unique_ctr&effective_status=[ACTIVE]&level=ad&date_preset=yesterday"
 				+ "&access_token=" + accessToken);
 
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -350,8 +353,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 	
 			
 			for (int i = 0; i < result.length(); i++) {
-				System.out.println(result.length());
-				
+								
 				result1 = result.getJSONObject(i);
 
 				DailyAdsPerformanceBean addAdAccountData = new DailyAdsPerformanceBean(client_stamp,
@@ -360,7 +362,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 						result1.getString("social_reach"), result1.getString("spend"),
 						result1.getString("inline_link_clicks"), result1.getString("frequency"),
 						result1.getString("impressions"), result1.getString("clicks"), result1.getString("cpc"),
-						result1.getString("ctr"), result1.getString("ad_id"), result1.getString("ad_name"));
+						result1.getString("ctr"), result1.getString("ad_id"), result1.getString("ad_name"),result1.getString("unique_ctr"));
 				dailyAdsAccount.add(addAdAccountData);
 
 			}
@@ -372,7 +374,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 			throws IOException {
 		URL Weekly_url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
 				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
-				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,ad_id,ad_name&effective_status=[ACTIVE]&level=ad&date_preset=last_week_mon_sun"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,ad_id,ad_name,unique_ctr&effective_status=[ACTIVE]&level=ad&date_preset=last_week_mon_sun"
 				+ "&access_token=" + accessToken);
 
 		HttpURLConnection weekly_conn = (HttpURLConnection) Weekly_url.openConnection();
@@ -401,7 +403,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 						weekly_result.getString("inline_link_clicks"), weekly_result.getString("frequency"),
 						weekly_result.getString("impressions"), weekly_result.getString("clicks"),
 						weekly_result.getString("cpc"), weekly_result.getString("ctr"),
-						weekly_result.getString("ad_id"), weekly_result.getString("ad_name"));
+						weekly_result.getString("ad_id"), weekly_result.getString("ad_name"),weekly_result.getString("unique_ctr"));
 				weeklyAdsAccount.add(addWeekly);
 			}
 		}
@@ -412,7 +414,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 			throws IOException {
 		URL Monthly_url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
 				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
-				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,ad_id,ad_name&effective_status=[ACTIVE]&level=ad&date_preset=last_month"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,ad_id,ad_name,unique_ctr&effective_status=[ACTIVE]&level=ad&date_preset=last_month"
 				+ "&access_token=" + accessToken);
 
 		HttpURLConnection monthly_conn = (HttpURLConnection) Monthly_url.openConnection();
@@ -441,7 +443,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 						monthly_result.getString("inline_link_clicks"), monthly_result.getString("frequency"),
 						monthly_result.getString("impressions"), monthly_result.getString("clicks"),
 						monthly_result.getString("cpc"), monthly_result.getString("ctr"),
-						monthly_result.getString("ad_id"), monthly_result.getString("ad_name"));
+						monthly_result.getString("ad_id"), monthly_result.getString("ad_name"),monthly_result.getString("unique_ctr"));
 				monthlyAdsAccount.add(addMonthly);
 			}
 		}
@@ -452,7 +454,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 			throws IOException {
 		URL url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
 				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
-				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,adset_id,adset_name&effective_status=[ACTIVE]&level=adset&date_preset=yesterday"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,adset_id,adset_name,unique_ctr&effective_status=[ACTIVE]&level=adset&date_preset=yesterday"
 				+ "&access_token=" + accessToken);
 
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -480,7 +482,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 						result1.getString("social_reach"), result1.getString("spend"),
 						result1.getString("inline_link_clicks"), result1.getString("frequency"),
 						result1.getString("impressions"), result1.getString("clicks"), result1.getString("cpc"),
-						result1.getString("ctr"), result1.getString("adset_id"), result1.getString("adset_name"));
+						result1.getString("ctr"), result1.getString("adset_id"), result1.getString("adset_name"),result1.getString("unique_ctr"));
 				dailyAdsetsAccount.add(addAdAccountData);
 
 			}
@@ -492,7 +494,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 			throws IOException {
 		URL Weekly_url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
 				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
-				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,adset_id,adset_name&effective_status=[ACTIVE]&level=adset&date_preset=last_week_mon_sun"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,adset_id,adset_name,unique_ctr&effective_status=[ACTIVE]&level=adset&date_preset=last_week_mon_sun"
 				+ "&access_token=" + accessToken);
 
 		HttpURLConnection weekly_conn = (HttpURLConnection) Weekly_url.openConnection();
@@ -521,7 +523,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 						weekly_result.getString("inline_link_clicks"), weekly_result.getString("frequency"),
 						weekly_result.getString("impressions"), weekly_result.getString("clicks"),
 						weekly_result.getString("cpc"), weekly_result.getString("ctr"),
-						weekly_result.getString("adset_id"), weekly_result.getString("adset_name"));
+						weekly_result.getString("adset_id"), weekly_result.getString("adset_name"),weekly_result.getString("unique_ctr"));
 				weeklyAdsetsAccount.add(addWeekly);
 			}
 		}
@@ -531,7 +533,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 			throws IOException {
 		URL Monthly_url = new URL("https://graph.facebook.com/v2.10/act_" + account_id
 				+ "/insights?fields=cpc,ctr,account_id,account_name,clicks,date_start,date_stop,impressions,"
-				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,adset_id,adset_name&effective_status=[ACTIVE]&level=adset&date_preset=last_month"
+				+ "frequency,inline_link_clicks,spend,social_reach,website_ctr,website_purchase_roas,adset_id,adset_name,unique_ctr&effective_status=[ACTIVE]&level=adset&date_preset=last_month"
 				+ "&access_token=" + accessToken);
 
 		HttpURLConnection monthly_conn = (HttpURLConnection) Monthly_url.openConnection();
@@ -560,7 +562,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 					monthly_result.getString("inline_link_clicks"), monthly_result.getString("frequency"),
 					monthly_result.getString("impressions"), monthly_result.getString("clicks"),
 					monthly_result.getString("cpc"), monthly_result.getString("ctr"),
-					monthly_result.getString("adset_id"), monthly_result.getString("adset_name"));
+					monthly_result.getString("adset_id"), monthly_result.getString("adset_name"),monthly_result.getString("unique_ctr"));
 			monthlyAdsetsAccount.add(addMonthly);
 		}
 		}

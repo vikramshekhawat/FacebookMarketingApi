@@ -1,5 +1,6 @@
 package com.reporting.bean;
 
+import org.springframework.cassandra.core.Ordering;
 import org.springframework.cassandra.core.PrimaryKeyType;
 import org.springframework.data.cassandra.mapping.Column;
 import org.springframework.data.cassandra.mapping.PrimaryKeyColumn;
@@ -10,6 +11,9 @@ public class DailyAdsetsPerformanceBean {
 	@PrimaryKeyColumn(name = "client_stamp", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
 	@Column
 	private String client_stamp;
+	@PrimaryKeyColumn(name = "unique_ctr", ordinal = 1, type = PrimaryKeyType.CLUSTERED, ordering = Ordering.DESCENDING)
+	@Column
+	private String unique_ctr;
 	@Column
 	private String reporting_starts;
 	@Column
@@ -45,7 +49,7 @@ public class DailyAdsetsPerformanceBean {
 	public DailyAdsetsPerformanceBean(String client_stamp, String reporting_starts, String reporting_ends,
 			String account_name, String account_id, String reach, String amount_spent, String link_clicks,
 			String frequency, String impressions, String clicks, String CPC, String CTR, String adset_id,
-			String adset_name) {
+			String adset_name,String unique_ctr) {
 		super();
 		this.client_stamp = client_stamp;
 		this.reporting_starts = reporting_starts;
@@ -62,12 +66,19 @@ public class DailyAdsetsPerformanceBean {
 		this.CTR = CTR;
 		this.adset_id = adset_id;
 		this.adset_name = adset_name;
+		this.unique_ctr=unique_ctr;
 	}
 	public String getClient_stamp() {
 		return client_stamp;
 	}
 	public void setClient_stamp(String client_stamp) {
 		this.client_stamp = client_stamp;
+	}
+	public String getUnique_ctr() {
+		return unique_ctr;
+	}
+	public void setUnique_ctr(String unique_ctr) {
+		this.unique_ctr = unique_ctr;
 	}
 	public String getReporting_starts() {
 		return reporting_starts;
@@ -154,7 +165,5 @@ public class DailyAdsetsPerformanceBean {
 		this.adset_name = adset_name;
 	}
 	
-	
-
 
 }
