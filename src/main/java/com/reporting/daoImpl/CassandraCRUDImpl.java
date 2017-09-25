@@ -225,17 +225,21 @@ public class CassandraCRUDImpl implements CassandraDao {
 			System.out.println(output);
 			full += output;
 			JSONObject JObject = new JSONObject(output);
+
 			JSONArray result = JObject.getJSONArray("data");
-			result1 = result.getJSONObject(0);
+			for (int i = 0; i < result.length(); i++) {
+				result1 = result.getJSONObject(i);
 
-			DailyCampaignPerformanceBean addAdAccountData = new DailyCampaignPerformanceBean(client_stamp,
-					result1.getString("date_start"), result1.getString("date_stop"), result1.getString("account_name"),
-					result1.getString("account_id"), result1.getString("social_reach"), result1.getString("spend"),
-					result1.getString("inline_link_clicks"), result1.getString("frequency"),
-					result1.getString("impressions"), result1.getString("clicks"), result1.getString("cpc"),
-					result1.getString("ctr"),result1.getString("campaign_id"),result1.getString("campaign_name") );
-			dailyCampaignAccount.add(addAdAccountData);
+				DailyCampaignPerformanceBean addAdAccountData = new DailyCampaignPerformanceBean(client_stamp,
+						result1.getString("date_start"), result1.getString("date_stop"),
+						result1.getString("account_name"), result1.getString("account_id"),
+						result1.getString("social_reach"), result1.getString("spend"),
+						result1.getString("inline_link_clicks"), result1.getString("frequency"),
+						result1.getString("impressions"), result1.getString("clicks"), result1.getString("cpc"),
+						result1.getString("ctr"), result1.getString("campaign_id"), result1.getString("campaign_name"));
+				dailyCampaignAccount.add(addAdAccountData);
 
+			}
 		}
 
 	}
@@ -262,17 +266,23 @@ public class CassandraCRUDImpl implements CassandraDao {
 			System.out.println(weeklyOutput);
 			data += weeklyOutput;
 			JSONObject WeeklyJObject = new JSONObject(weeklyOutput);
-			JSONArray Weeklyresult = WeeklyJObject.getJSONArray("data");
-			weekly_result = Weeklyresult.getJSONObject(0);
 
-			WeeklyCampaignPerformanceBean addWeekly = new WeeklyCampaignPerformanceBean(client_stamp,
-					weekly_result.getString("date_start"), weekly_result.getString("date_stop"), weekly_result.getString("account_name"),
-					weekly_result.getString("account_id"), weekly_result.getString("social_reach"), weekly_result.getString("spend"),
-					weekly_result.getString("inline_link_clicks"), weekly_result.getString("frequency"),
-					weekly_result.getString("impressions"), weekly_result.getString("clicks"), weekly_result.getString("cpc"),
-					weekly_result.getString("ctr"),weekly_result.getString("campaign_id"),weekly_result.getString("campaign_name") );
-			weeklyCampaignAccount.add(addWeekly);
+			JSONArray Weeklyresult = WeeklyJObject.getJSONArray("data");
+			for (int i = 0; i < Weeklyresult.length(); i++) {
+				weekly_result = Weeklyresult.getJSONObject(i);
+
+				WeeklyCampaignPerformanceBean addWeekly = new WeeklyCampaignPerformanceBean(client_stamp,
+						weekly_result.getString("date_start"), weekly_result.getString("date_stop"),
+						weekly_result.getString("account_name"), weekly_result.getString("account_id"),
+						weekly_result.getString("social_reach"), weekly_result.getString("spend"),
+						weekly_result.getString("inline_link_clicks"), weekly_result.getString("frequency"),
+						weekly_result.getString("impressions"), weekly_result.getString("clicks"),
+						weekly_result.getString("cpc"), weekly_result.getString("ctr"),
+						weekly_result.getString("campaign_id"), weekly_result.getString("campaign_name"));
+				weeklyCampaignAccount.add(addWeekly);
+			}
 		}
+
 	}
 
 	public void writeCampaignDataToCassandraMonthly(String accessToken, String account_id, String client_stamp)
@@ -298,15 +308,19 @@ public class CassandraCRUDImpl implements CassandraDao {
 			monthlydata += monthlyOutput;
 			JSONObject MonthlyJObject = new JSONObject(monthlyOutput);
 			JSONArray Monthlyresult = MonthlyJObject.getJSONArray("data");
-			monthly_result = Monthlyresult.getJSONObject(0);
+			for (int i = 0; i < Monthlyresult.length(); i++) {
+				monthly_result = Monthlyresult.getJSONObject(i);
 
-			MonthlyCampaignPerformanceBean addMonthly = new MonthlyCampaignPerformanceBean(client_stamp,
-					monthly_result.getString("date_start"), monthly_result.getString("date_stop"), monthly_result.getString("account_name"),
-					monthly_result.getString("account_id"), monthly_result.getString("social_reach"), monthly_result.getString("spend"),
-					monthly_result.getString("inline_link_clicks"), monthly_result.getString("frequency"),
-					monthly_result.getString("impressions"), monthly_result.getString("clicks"), monthly_result.getString("cpc"),
-					monthly_result.getString("ctr"),monthly_result.getString("campaign_id"),monthly_result.getString("campaign_name") );
-			monthlyCampaignAccount.add(addMonthly);
+				MonthlyCampaignPerformanceBean addMonthly = new MonthlyCampaignPerformanceBean(client_stamp,
+						monthly_result.getString("date_start"), monthly_result.getString("date_stop"),
+						monthly_result.getString("account_name"), monthly_result.getString("account_id"),
+						monthly_result.getString("social_reach"), monthly_result.getString("spend"),
+						monthly_result.getString("inline_link_clicks"), monthly_result.getString("frequency"),
+						monthly_result.getString("impressions"), monthly_result.getString("clicks"),
+						monthly_result.getString("cpc"), monthly_result.getString("ctr"),
+						monthly_result.getString("campaign_id"), monthly_result.getString("campaign_name"));
+				monthlyCampaignAccount.add(addMonthly);
+			}
 		}
 	}
 
@@ -333,16 +347,23 @@ public class CassandraCRUDImpl implements CassandraDao {
 			full += output;
 			JSONObject JObject = new JSONObject(output);
 			JSONArray result = JObject.getJSONArray("data");
-			result1 = result.getJSONObject(0);
+	
+			
+			for (int i = 0; i < result.length(); i++) {
+				System.out.println(result.length());
+				
+				result1 = result.getJSONObject(i);
 
-			DailyAdsPerformanceBean addAdAccountData = new DailyAdsPerformanceBean(client_stamp,
-					result1.getString("date_start"), result1.getString("date_stop"), result1.getString("account_name"),
-					result1.getString("account_id"), result1.getString("social_reach"), result1.getString("spend"),
-					result1.getString("inline_link_clicks"), result1.getString("frequency"),
-					result1.getString("impressions"), result1.getString("clicks"), result1.getString("cpc"),
-					result1.getString("ctr"),result1.getString("ad_id"),result1.getString("ad_name") );
-			dailyAdsAccount.add(addAdAccountData);
+				DailyAdsPerformanceBean addAdAccountData = new DailyAdsPerformanceBean(client_stamp,
+						result1.getString("date_start"), result1.getString("date_stop"),
+						result1.getString("account_name"), result1.getString("account_id"),
+						result1.getString("social_reach"), result1.getString("spend"),
+						result1.getString("inline_link_clicks"), result1.getString("frequency"),
+						result1.getString("impressions"), result1.getString("clicks"), result1.getString("cpc"),
+						result1.getString("ctr"), result1.getString("ad_id"), result1.getString("ad_name"));
+				dailyAdsAccount.add(addAdAccountData);
 
+			}
 		}
 
 	}
@@ -370,15 +391,19 @@ public class CassandraCRUDImpl implements CassandraDao {
 			data += weeklyOutput;
 			JSONObject WeeklyJObject = new JSONObject(weeklyOutput);
 			JSONArray Weeklyresult = WeeklyJObject.getJSONArray("data");
-			weekly_result = Weeklyresult.getJSONObject(0);
+			for (int i = 0; i < Weeklyresult.length(); i++) {
+				weekly_result = Weeklyresult.getJSONObject(i);
 
-			WeeklyAdsPerformanceBean addWeekly = new WeeklyAdsPerformanceBean(client_stamp,
-					weekly_result.getString("date_start"), weekly_result.getString("date_stop"), weekly_result.getString("account_name"),
-					weekly_result.getString("account_id"), weekly_result.getString("social_reach"), weekly_result.getString("spend"),
-					weekly_result.getString("inline_link_clicks"), weekly_result.getString("frequency"),
-					weekly_result.getString("impressions"), weekly_result.getString("clicks"), weekly_result.getString("cpc"),
-					weekly_result.getString("ctr"),weekly_result.getString("ad_id"),weekly_result.getString("ad_name") );
-			weeklyAdsAccount.add(addWeekly);
+				WeeklyAdsPerformanceBean addWeekly = new WeeklyAdsPerformanceBean(client_stamp,
+						weekly_result.getString("date_start"), weekly_result.getString("date_stop"),
+						weekly_result.getString("account_name"), weekly_result.getString("account_id"),
+						weekly_result.getString("social_reach"), weekly_result.getString("spend"),
+						weekly_result.getString("inline_link_clicks"), weekly_result.getString("frequency"),
+						weekly_result.getString("impressions"), weekly_result.getString("clicks"),
+						weekly_result.getString("cpc"), weekly_result.getString("ctr"),
+						weekly_result.getString("ad_id"), weekly_result.getString("ad_name"));
+				weeklyAdsAccount.add(addWeekly);
+			}
 		}
 
 	}
@@ -406,15 +431,19 @@ public class CassandraCRUDImpl implements CassandraDao {
 			monthlydata += monthlyOutput;
 			JSONObject MonthlyJObject = new JSONObject(monthlyOutput);
 			JSONArray Monthlyresult = MonthlyJObject.getJSONArray("data");
-			monthly_result = Monthlyresult.getJSONObject(0);
+			for (int i = 0; i < Monthlyresult.length(); i++) {
+				monthly_result = Monthlyresult.getJSONObject(i);
 
-			MonthlyAdsPerformanceBean addMonthly = new MonthlyAdsPerformanceBean(client_stamp,
-					monthly_result.getString("date_start"), monthly_result.getString("date_stop"), monthly_result.getString("account_name"),
-					monthly_result.getString("account_id"), monthly_result.getString("social_reach"), monthly_result.getString("spend"),
-					monthly_result.getString("inline_link_clicks"), monthly_result.getString("frequency"),
-					monthly_result.getString("impressions"), monthly_result.getString("clicks"), monthly_result.getString("cpc"),
-					monthly_result.getString("ctr"),monthly_result.getString("ad_id"),monthly_result.getString("ad_name") );
-			monthlyAdsAccount.add(addMonthly);
+				MonthlyAdsPerformanceBean addMonthly = new MonthlyAdsPerformanceBean(client_stamp,
+						monthly_result.getString("date_start"), monthly_result.getString("date_stop"),
+						monthly_result.getString("account_name"), monthly_result.getString("account_id"),
+						monthly_result.getString("social_reach"), monthly_result.getString("spend"),
+						monthly_result.getString("inline_link_clicks"), monthly_result.getString("frequency"),
+						monthly_result.getString("impressions"), monthly_result.getString("clicks"),
+						monthly_result.getString("cpc"), monthly_result.getString("ctr"),
+						monthly_result.getString("ad_id"), monthly_result.getString("ad_name"));
+				monthlyAdsAccount.add(addMonthly);
+			}
 		}
 
 	}
@@ -442,16 +471,19 @@ public class CassandraCRUDImpl implements CassandraDao {
 			full += output;
 			JSONObject JObject = new JSONObject(output);
 			JSONArray result = JObject.getJSONArray("data");
-			result1 = result.getJSONObject(0);
+			for (int i = 0; i < result.length(); i++) {
+				result1 = result.getJSONObject(i);
 
-			DailyAdsetsPerformanceBean addAdAccountData = new DailyAdsetsPerformanceBean(client_stamp,
-					result1.getString("date_start"), result1.getString("date_stop"), result1.getString("account_name"),
-					result1.getString("account_id"), result1.getString("social_reach"), result1.getString("spend"),
-					result1.getString("inline_link_clicks"), result1.getString("frequency"),
-					result1.getString("impressions"), result1.getString("clicks"), result1.getString("cpc"),
-					result1.getString("ctr"),result1.getString("adset_id"),result1.getString("adset_name") );
-			dailyAdsetsAccount.add(addAdAccountData);
+				DailyAdsetsPerformanceBean addAdAccountData = new DailyAdsetsPerformanceBean(client_stamp,
+						result1.getString("date_start"), result1.getString("date_stop"),
+						result1.getString("account_name"), result1.getString("account_id"),
+						result1.getString("social_reach"), result1.getString("spend"),
+						result1.getString("inline_link_clicks"), result1.getString("frequency"),
+						result1.getString("impressions"), result1.getString("clicks"), result1.getString("cpc"),
+						result1.getString("ctr"), result1.getString("adset_id"), result1.getString("adset_name"));
+				dailyAdsetsAccount.add(addAdAccountData);
 
+			}
 		}
 
 	}
@@ -479,17 +511,20 @@ public class CassandraCRUDImpl implements CassandraDao {
 			data += weeklyOutput;
 			JSONObject WeeklyJObject = new JSONObject(weeklyOutput);
 			JSONArray Weeklyresult = WeeklyJObject.getJSONArray("data");
-			weekly_result = Weeklyresult.getJSONObject(0);
+			for (int i = 0; i < Weeklyresult.length(); i++) {
+				weekly_result = Weeklyresult.getJSONObject(i);
 
-			WeeklyAdsetsPerformanceBean addWeekly = new WeeklyAdsetsPerformanceBean(client_stamp,
-					weekly_result.getString("date_start"), weekly_result.getString("date_stop"), weekly_result.getString("account_name"),
-					weekly_result.getString("account_id"), weekly_result.getString("social_reach"), weekly_result.getString("spend"),
-					weekly_result.getString("inline_link_clicks"), weekly_result.getString("frequency"),
-					weekly_result.getString("impressions"), weekly_result.getString("clicks"), weekly_result.getString("cpc"),
-					weekly_result.getString("ctr"),weekly_result.getString("adset_id"),weekly_result.getString("adset_name") );
-			weeklyAdsetsAccount.add(addWeekly);
+				WeeklyAdsetsPerformanceBean addWeekly = new WeeklyAdsetsPerformanceBean(client_stamp,
+						weekly_result.getString("date_start"), weekly_result.getString("date_stop"),
+						weekly_result.getString("account_name"), weekly_result.getString("account_id"),
+						weekly_result.getString("social_reach"), weekly_result.getString("spend"),
+						weekly_result.getString("inline_link_clicks"), weekly_result.getString("frequency"),
+						weekly_result.getString("impressions"), weekly_result.getString("clicks"),
+						weekly_result.getString("cpc"), weekly_result.getString("ctr"),
+						weekly_result.getString("adset_id"), weekly_result.getString("adset_name"));
+				weeklyAdsetsAccount.add(addWeekly);
+			}
 		}
-
 	}
 
 	public void writeAdsetsDataToCassandraMonthly(String accessToken, String account_id, String client_stamp)
@@ -515,15 +550,19 @@ public class CassandraCRUDImpl implements CassandraDao {
 			monthlydata += monthlyOutput;
 			JSONObject MonthlyJObject = new JSONObject(monthlyOutput);
 			JSONArray Monthlyresult = MonthlyJObject.getJSONArray("data");
-			monthly_result = Monthlyresult.getJSONObject(0);
+			for(int i=0;i<Monthlyresult.length();i++){
+			monthly_result = Monthlyresult.getJSONObject(i);
 
 			MonthlyAdsetsPerformanceBean addMonthly = new MonthlyAdsetsPerformanceBean(client_stamp,
-					monthly_result.getString("date_start"), monthly_result.getString("date_stop"), monthly_result.getString("account_name"),
-					monthly_result.getString("account_id"), monthly_result.getString("social_reach"), monthly_result.getString("spend"),
+					monthly_result.getString("date_start"), monthly_result.getString("date_stop"),
+					monthly_result.getString("account_name"), monthly_result.getString("account_id"),
+					monthly_result.getString("social_reach"), monthly_result.getString("spend"),
 					monthly_result.getString("inline_link_clicks"), monthly_result.getString("frequency"),
-					monthly_result.getString("impressions"), monthly_result.getString("clicks"), monthly_result.getString("cpc"),
-					monthly_result.getString("ctr"),monthly_result.getString("adset_id"),monthly_result.getString("adset_name") );
+					monthly_result.getString("impressions"), monthly_result.getString("clicks"),
+					monthly_result.getString("cpc"), monthly_result.getString("ctr"),
+					monthly_result.getString("adset_id"), monthly_result.getString("adset_name"));
 			monthlyAdsetsAccount.add(addMonthly);
+		}
 		}
 	}
 
@@ -566,7 +605,7 @@ public class CassandraCRUDImpl implements CassandraDao {
 			cassandraOperations.insert(accountbean);
 
 		}
-		
+
 		for (int i = 0; i < dailyAdsAccount.size(); i++) {
 
 			DailyAdsPerformanceBean accountbean = dailyAdsAccount.get(i);
@@ -603,9 +642,6 @@ public class CassandraCRUDImpl implements CassandraDao {
 			cassandraOperations.insert(accountbean);
 
 		}
-		
-		
-		
 
 	}
 
